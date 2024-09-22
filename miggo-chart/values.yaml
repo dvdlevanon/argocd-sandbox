@@ -1,16 +1,17 @@
-collector:
-  customerAttr: "io.miggo.tenant.id=b3ac1c37-0a65-4796-8029-4f4ceb94ec37,io.miggo.project.id=e0ca5592-43a3-4a3c-adb2-1b0e05a7f257"
+miggo-operator:
+  collector:
+    customerAttr: "io.miggo.tenant.id=b3ac1c37-0a65-4796-8029-4f4ceb94ec37,io.miggo.project.id=e0ca5592-43a3-4a3c-adb2-1b0e05a7f257"
 
-manager:
-  autoInstrumentationImage:
-    python:
-      repository: "miggoprod/autoinstrumentation-python"
-      tag: "v24.0909.2"
+  manager:
+    autoInstrumentationImage:
+      python:
+        repository: "miggoprod/autoinstrumentation-python"
+        tag: "v24.0909.2"
 
-updater:
-  existingSecret: "updater-aws-secret"
-  aws:
-    bucketName: "miggo-infra-agent/biggo"
+  updater:
+    existingSecret: "updater-aws-secret"
+    aws:
+      bucketName: "miggo-infra-agent/biggo"
 
-imagePullSecrets:
-  - name: "regcred"
+  imagePullSecrets:
+    - name: "regcred"
