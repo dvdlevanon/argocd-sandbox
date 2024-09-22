@@ -9,8 +9,8 @@ miggo-operator:
         tag: "v24.0909.2"
 
   updater:
-    existingSecret: "updater-aws-secret"
     aws:
+      existingSecret: "updater-aws-secret"
       bucketName: "miggo-infra-agent/biggo"
 
   imagePullSecrets:
