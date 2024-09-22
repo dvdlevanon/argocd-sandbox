@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: delayed-resources-configmap
+data:
+  instrumentation.yaml: |
+    apiVersion: opentelemetry.io/v1alpha1
+    kind: Instrumentation
+    metadata:
+      name: {{ .Release.Name }}-instrumentation
+    spec:
+      exporter:
+        endpoint: http://{{ .Release.Name }}-collector.{{ .Values.collector.collectorNameSpace | default .Release.Namespace }}:{{ .Values.collector.collectorPort }}
+
+      env:
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: {{ .Values.collector.customerAttr}}
+
+      sampler:
+        type: parentbased_always_on
+      python:
+        {{- include "imagePullSecrets" . | nindent 8 }}
+        env:
+          - name: OTEL_METRICS_EXPORTER
+            value: "none"
+      nodejs:
+        {{- include "imagePullSecrets" . | nindent 8 }}
+        env:
+          - name: OTEL_TRACES_EXPORTER
+            value: "otlp"
+          - name: OTEL_EXPORTER_OTLP_TRACES_PROTOCOL
+            value: "http/protobuf"
+
+  collector.yaml: |
+    apiVersion: opentelemetry.io/v1beta1
+    kind: OpenTelemetryCollector
+    metadata:
+      name: {{ .Release.Name }}
+    spec:
+      mode: deployment
+      imagePullPolicy: {{ .Values.collector.imagePullPolicy }}
+      {{- include "imagePullSecrets" . | nindent 6 }}
+      config:
+        receivers:
+          otlp:
+            protocols:
+              grpc:
+                endpoint: "0.0.0.0:4317"
+              http:
+                endpoint: "0.0.0.0:4318"
+        processors:
+          batch: {}
+
+        exporters:
+          logging:
+            loglevel: debug
+
+        service:
+          pipelines:
+            traces:
+              receivers: [otlp]
+              exporters: [logging]
+              processors: [batch]
