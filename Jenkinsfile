@@ -14,13 +14,14 @@ pipeline {
         dashboardImage = null
         
         subenvName = sightd.getSubenvNameFromBranch()
-        dockerTags = sightd.getImageTags(env.GIT_COMMIT, subenvName)
     }
     
     stages {
         stage('Push Container') {
             steps {
                 script {
+                    dockerTags = sightd.getImageTags(env.GIT_COMMIT, subenvName)
+                    
                     for (tag in dockerTags) {
                         print tag
                     }
